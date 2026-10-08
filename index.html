@@ -3,45 +3,122 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คลังภาพกิจกรรม - ศูนย์การศึกษาพิเศษ เขตการศึกษา 3 จังหวัดสงขลา</title>
+  <title>ระบบจัดเก็บและคลังภาพกิจกรรม</title>
+  
+  <!-- ฟอนต์ Prompt สไตล์มินิมอลโมเดิร์น -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased selection:bg-blue-500 selection:text-white">
 
-  <!-- Header -->
-  <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div>
-        <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-          <span>📸</span> คลังภาพกิจกรรม
-        </h1>
-        <p class="text-xs text-slate-500">ศูนย์การศึกษาพิเศษ เขตการศึกษา 3 จังหวัดสงขลา</p>
+  <!-- พื้นหลังประดับแสงสะท้อนเบาๆ (Ambient Glow) -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-blue-400/15 to-indigo-400/15 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex flex-col sm:flex-row items-center justify-between gap-4 py-3 sm:py-0">
+      
+      <!-- Brand & Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 ring-4 ring-blue-50">
+          <i data-lucide="image" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">คลังภาพกิจกรรมออนไลน์</h1>
+          <p class="text-xs text-slate-400 font-normal">ระบบจัดเก็บและเผยแพร่ภาพถ่ายกิจกรรม</p>
+        </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <label for="monthFilter" class="text-xs font-semibold text-slate-600">เลือกช่วงเวลา:</label>
-        <select id="monthFilter" class="border border-slate-300 rounded-xl px-3 py-1.5 text-sm bg-white focus:ring-2 focus:ring-blue-600 outline-none">
-          <option value="all">แสดงทั้งหมดทุกเดือน</option>
-        </select>
+      <!-- Filters & Search Toolbar -->
+      <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+        <!-- Live Search -->
+        <div class="relative flex-1 sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="ค้นหากิจกรรม หรือชื่อรูป..." 
+            class="w-full pl-9 pr-4 py-2 bg-slate-100/80 hover:bg-slate-100 focus:bg-white text-xs sm:text-sm rounded-xl border border-transparent focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+          />
+        </div>
+
+        <!-- Folder Dropdown -->
+        <div class="relative">
+          <select 
+            id="monthFilter" 
+            class="appearance-none pl-3.5 pr-9 py-2 bg-white text-xs sm:text-sm font-medium text-slate-700 rounded-xl border border-slate-200 shadow-sm hover:border-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer transition-all"
+          >
+            <option value="all">📁 ทุกช่วงเวลา / โฟลเดอร์</option>
+          </select>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        </div>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 py-8">
-    <div id="loading" class="text-center py-24 text-slate-500">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-600 border-t-transparent mb-3"></div>
-      <p class="font-medium text-sm">กำลังเชื่อมต่อข้อมูลจาก Google Drive...</p>
+  <!-- Container หลัก -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+    <!-- Loading Skeleton -->
+    <div id="loading" class="flex flex-col items-center justify-center py-28 space-y-4">
+      <div class="relative flex items-center justify-center">
+        <div class="w-12 h-12 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
+      </div>
+      <div class="text-center">
+        <p class="text-sm font-medium text-slate-600">กำลังเชื่อมต่อฐานข้อมูลภาพถ่าย...</p>
+        <p class="text-xs text-slate-400 mt-1">Google Drive Cloud Storage</p>
+      </div>
     </div>
 
+    <!-- Gallery Container -->
     <div id="gallery-container" class="space-y-12"></div>
+
   </main>
 
+  <!-- Modal ดูภาพขนาดใหญ่ (Lightbox Modal) -->
+  <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 pointer-events-none">
+    <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+      
+      <!-- Top Action bar in Modal -->
+      <div class="w-full flex justify-between items-center text-white mb-3 px-2">
+        <p id="modalImageName" class="text-xs sm:text-sm font-medium text-slate-200 truncate max-w-[70%]"></p>
+        <div class="flex items-center gap-2">
+          <a id="modalDownloadBtn" href="#" download="" target="_blank" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-lg shadow-blue-600/30">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>ดาวน์โหลด</span>
+          </a>
+          <button id="closeModalBtn" class="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ภาพขยาย -->
+      <div class="relative rounded-2xl overflow-hidden bg-black/40 flex items-center justify-center max-h-[80vh] shadow-2xl">
+        <img id="modalImage" src="" alt="preview" class="max-w-full max-h-[80vh] object-contain rounded-xl select-none" />
+      </div>
+    </div>
+  </div>
+
   <script>
-    // วาง Web App URL ที่ได้จากการ Deploy Apps Script ล่าสุดที่นี่
-    const API_URL = "https://script.google.com/macros/s/AKfycbyzycXQwFzQdPKVXpP7Gh7ntzzsOpRMMKthjrTbkTCeE0XYOIRVWAHivALO3xY3dup8/exec";
+    // แทนที่ด้วย Web App URL ของ Google Apps Script ที่ Deploy ล่าสุด
+    const API_URL = "https://script.google.com/macros/s/AKfycbzxI30uAvNXWPm04GzT803itEvdwJsqML23eiHDMQLmDEbB13o6_PI3wHmH9sMQK9hB/exec";
 
     let galleryData = [];
 
@@ -50,9 +127,7 @@
         const response = await fetch(API_URL);
         const data = await response.json();
 
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        if (data.error) throw new Error(data.error);
 
         galleryData = data;
         document.getElementById('loading').classList.add('hidden');
@@ -60,32 +135,61 @@
         renderGallery(galleryData);
       } catch (err) {
         document.getElementById('loading').innerHTML = `
-          <div class="p-6 bg-red-50 rounded-2xl max-w-md mx-auto border border-red-200 text-red-600 text-sm">
-            <p class="font-bold mb-1">ไม่สามารถดึงรูปภาพได้</p>
-            <p class="text-xs text-red-500 mb-3">โปรดตรวจสอบว่าเปิดสิทธิ์โฟลเดอร์ใน Google Drive เป็น "ทุกคนที่มีลิงก์" หรือยัง</p>
-            <p class="text-[11px] font-mono bg-white p-2 rounded border border-red-100">${err.message}</p>
+          <div class="max-w-md bg-white p-6 rounded-3xl border border-red-100 shadow-xl shadow-red-500/5 text-center">
+            <div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">เชื่อมต่อคลังภาพไม่สำเร็จ</h3>
+            <p class="text-xs text-slate-500 mt-1 mb-4">โปรดตรวจสอบว่าเปิดสิทธิ์โฟลเดอร์ Google Drive เป็นสาธารณะแล้ว</p>
+            <span class="inline-block px-3 py-1.5 bg-red-50 text-red-600 text-[11px] font-mono rounded-lg border border-red-100">${err.message}</span>
           </div>
         `;
+        lucide.createIcons();
       }
     }
 
     function buildFilterOptions() {
       const select = document.getElementById('monthFilter');
+      select.innerHTML = '<option value="all">📁 แสดงทุกโฟลเดอร์</option>';
       galleryData.forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.month;
-        opt.textContent = `เดือน ${item.month}`;
+        opt.textContent = `📁 โฟลเดอร์: ${item.month}`;
         select.appendChild(opt);
       });
 
-      select.addEventListener('change', (e) => {
-        const val = e.target.value;
-        if (val === 'all') {
-          renderGallery(galleryData);
-        } else {
-          renderGallery(galleryData.filter(d => d.month === val));
-        }
-      });
+      // ดัก Event ทั้งช่อง Filter และช่อง Search
+      select.addEventListener('change', filterAndRender);
+      document.getElementById('searchInput').addEventListener('input', filterAndRender);
+    }
+
+    function filterAndRender() {
+      const selectedMonth = document.getElementById('monthFilter').value;
+      const searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      let filtered = JSON.parse(JSON.stringify(galleryData));
+
+      // กรองตามโฟลเดอร์/เดือน
+      if (selectedMonth !== 'all') {
+        filtered = filtered.filter(item => item.month === selectedMonth);
+      }
+
+      // กรองตามคำค้นหา
+      if (searchKeyword) {
+        filtered = filtered.map(group => {
+          const matchingEvents = group.events.map(event => {
+            const isEventMatch = event.name.toLowerCase().includes(searchKeyword);
+            const matchingPhotos = event.photos.filter(photo => 
+              isEventMatch || photo.name.toLowerCase().includes(searchKeyword)
+            );
+            return { ...event, photos: matchingPhotos };
+          }).filter(event => event.photos.length > 0);
+
+          return { ...group, events: matchingEvents };
+        }).filter(group => group.events.length > 0);
+      }
+
+      renderGallery(filtered);
     }
 
     function renderGallery(dataset) {
@@ -93,85 +197,84 @@
       container.innerHTML = '';
 
       if (!dataset || dataset.length === 0) {
-        container.innerHTML = '<p class="text-center py-12 text-slate-400">ยังไม่มีข้อมูลรูปภาพในระบบ</p>';
+        container.innerHTML = `
+          <div class="text-center py-20 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+            <i data-lucide="image-off" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
+            <p class="text-sm font-semibold text-slate-600">ไม่พบรูปภาพตามเงื่อนไขที่เลือก</p>
+            <p class="text-xs text-slate-400 mt-1">ลองเปลี่ยนคำค้นหา หรือเลือกโฟลเดอร์อื่น</p>
+          </div>
+        `;
+        lucide.createIcons();
         return;
       }
 
-      dataset.forEach(monthItem => {
-        const monthSection = document.createElement('section');
-        monthSection.className = 'space-y-6';
+      dataset.forEach(folderGroup => {
+        const section = document.createElement('section');
+        section.className = 'space-y-6';
 
-        // หัวข้อเดือน
-        const monthHeader = document.createElement('div');
-        monthHeader.className = 'flex items-center gap-3 border-b border-slate-200 pb-2';
-        monthHeader.innerHTML = `
-          <span class="p-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-bold">📅</span>
-          <h2 class="text-xl font-bold text-slate-800">ประจำเดือน ${monthItem.month}</h2>
+        // Header ของ Folder
+        const header = document.createElement('div');
+        header.className = 'flex items-center gap-2.5 pb-2 border-b border-slate-200';
+        header.innerHTML = `
+          <div class="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+            <i data-lucide="folder" class="w-4 h-4"></i>
+          </div>
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 tracking-tight">${folderGroup.month}</h2>
         `;
-        monthSection.appendChild(monthHeader);
+        section.appendChild(header);
 
-        // แต่ละกิจกรรมในเดือนนั้น
-        monthItem.events.forEach(event => {
-          const eventCard = document.createElement('div');
-          eventCard.className = 'bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 space-y-4';
+        // แต่ละกิจกรรม
+        folderGroup.events.forEach(event => {
+          const card = document.createElement('div');
+          card.className = 'bg-white/70 backdrop-blur-sm p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-sm hover:shadow-md transition-shadow space-y-4';
 
-          const titleBox = document.createElement('div');
-          titleBox.className = 'flex items-center justify-between';
-          titleBox.innerHTML = `
-            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
-              ${event.name}
-            </h3>
-            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">
-              ${event.photos.length} รูปภาพ
-            </span>
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                <h3 class="text-sm sm:text-base font-semibold text-slate-800">${event.name}</h3>
+              </div>
+              <span class="inline-flex items-center gap-1 px-3 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                <i data-lucide="images" class="w-3.5 h-3.5 text-slate-400"></i>
+                ${event.photos.length} ภาพ
+              </span>
+            </div>
           `;
-          eventCard.appendChild(titleBox);
 
-          // Grid แสดงรูปภาพ
+          // Photo Grid
           const grid = document.createElement('div');
-          grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4';
+          grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5';
 
           event.photos.forEach(photo => {
-            const card = document.createElement('div');
-            card.className = 'group relative rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex flex-col';
+            const photoCard = document.createElement('div');
+            photoCard.className = 'group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/70 shadow-sm hover:shadow-xl transition-all duration-300';
 
-            card.innerHTML = `
-              <div class="aspect-square w-full overflow-hidden relative">
-                <img 
-                  src="${photo.thumbnailUrl}" 
-                  alt="${photo.name}" 
-                  loading="lazy"
-                  referrerpolicy="no-referrer"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=กำลังโหลด...';"
-                />
-              </div>
-              <div class="p-2 bg-white flex items-center justify-between gap-1 border-t border-slate-100">
-                <span class="text-[11px] text-slate-500 truncate flex-1" title="${photo.name}">${photo.name}</span>
-                <a 
-                  href="${photo.downloadUrl}" 
-                  download="${photo.name}"
-                  target="_blank"
-                  class="p-1.5 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                  title="ดาวน์โหลดรูปภาพนี้"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                </a>
-              </div>
-            `;
-            grid.appendChild(card);
-          });
+            photoCard.innerHTML = `
+              <img 
+                src="${photo.thumbnailUrl}" 
+                alt="${photo.name}" 
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
 
-          eventCard.appendChild(grid);
-          monthSection.appendChild(eventCard);
-        });
-
-        container.appendChild(monthSection);
-      });
-    }
-
-    loadData();
-  </script>
-</body>
-</html>
+              <!-- Overlay ลอยขึ้นเมื่อ Hover -->
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-2.5">
+                <p class="text-[11px] font-medium text-white truncate mb-2 px-1" title="${photo.name}">${photo.name}</p>
+                <div class="flex items-center gap-1.5">
+                  <button 
+                    onclick="openLightbox('${photo.thumbnailUrl.replace('w800', 'w1600')}', '${photo.name}', '${photo.downloadUrl}')" 
+                    class="flex-1 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white rounded-lg text-[11px] font-medium flex items-center justify-center gap-1 transition-colors"
+                  >
+                    <i data-lucide="maximize-2" class="w-3 h-3"></i>
+                    <span>ขยาย</span>
+                  </button>
+                  <a 
+                    href="${photo.downloadUrl}" 
+                    download="${photo.name}" 
+                    target="_blank" 
+                    class="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[11px] transition-colors"
+                    title="ดาวน์โหลด"
+                  >
+                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                  </a>
