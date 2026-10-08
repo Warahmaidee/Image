@@ -278,3 +278,56 @@
                   >
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                   </a>
+                </div>
+              </div>
+            `;
+            grid.appendChild(photoCard);
+          });
+
+          card.appendChild(grid);
+          section.appendChild(card);
+        });
+
+        container.appendChild(section);
+      });
+
+      lucide.createIcons();
+    }
+
+    // ฟังก์ชันจัดการ Lightbox Modal
+    const modal = document.getElementById('lightboxModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalName = document.getElementById('modalImageName');
+    const modalDownload = document.getElementById('modalDownloadBtn');
+
+    function openLightbox(imgSrc, name, downloadUrl) {
+      modalImg.src = imgSrc;
+      modalName.textContent = name;
+      modalDownload.href = downloadUrl;
+      modalDownload.setAttribute('download', name);
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100', 'pointer-events-auto');
+      }, 10);
+    }
+
+    function closeLightbox() {
+      modal.classList.remove('opacity-100', 'pointer-events-auto');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modalImg.src = '';
+      }, 300);
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', closeLightbox);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeLightbox();
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
